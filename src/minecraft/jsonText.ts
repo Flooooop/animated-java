@@ -171,6 +171,7 @@ interface TextBit {
 	canvas: CanvasFrame
 	posX: number
 	posY: number
+	metrics: TextMetrics
 }
 
 class TextCanvas {
@@ -223,7 +224,7 @@ class TextCanvas {
 
 		canvas.ctx.fillText(text, 0, 0)
 
-		this.textBits.push({ canvas, posX: this.currentX, posY: this.currentY })
+		this.textBits.push({ canvas, posX: this.currentX, posY: this.currentY, metrics })
 
 		this.currentX += width
 		// this.currentY += height

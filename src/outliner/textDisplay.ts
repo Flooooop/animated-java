@@ -140,9 +140,7 @@ events.LOAD.subscribe(() => {
 			// 	{ text: 'Hello World!', color: 'red' },
 			// 	{ text: 'Hello World Again!' },
 			// ])
-			const text = new JsonText([
-				{ text: 'MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM' },
-			])
+			const text = new JsonText([{ text: 'aword aword aword aword aword' }])
 			const canvas = text.renderToCanvas()
 			const width = canvas.width
 			const height = canvas.height
