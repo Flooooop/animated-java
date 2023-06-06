@@ -111,13 +111,15 @@ export class JsonText {
 		return this.text
 	}
 
-	renderToCanvas(): TextCanvas {
+	renderToCanvas(lineWidth: number): TextCanvas {
 		const textCanvas = new TextCanvas()
+		textCanvas.width = lineWidth
+
+		console.log(wrapJsonTextLines(textCanvas.ctx, this, lineWidth))
 
 		this._renderToCanvas(this.text, textCanvas)
-		// textCanvas.canvas.width = textCanvas.width
-		// textCanvas.canvas.height = textCanvas.height
-		textCanvas.render()
+
+		textCanvas.render(lineWidth)
 
 		return textCanvas
 	}
@@ -167,11 +169,79 @@ export class JsonText {
 	}
 }
 
+function getWords(text: string) {
+	return text
+		.replace(/\n\n/g, ' ` ')
+		.replace(/(\n\s|\s\n)/g, '\r')
+		.replace(/\s\s/g, ' ')
+		.replace('`', ' ')
+		.replace(/(\r|\n)/g, ' ' + ' ')
+		.split(' ')
+}
+
+export function wrapJsonTextLines(
+	ctx: CanvasRenderingContext2D,
+	jsonText: JsonText,
+	width: number
+) {
+	//
+	let currentWidth = 0
+
+	const lines: Array<{
+		text: string
+		width: number
+		comp: JsonTextComponent
+	}>[] = []
+}
+
 interface TextBit {
 	canvas: CanvasFrame
 	posX: number
 	posY: number
 	metrics: TextMetrics
+	text: string
+}
+
+function wrapLines(ctx: CanvasRenderingContext2D, text: string, maxWidth: number) {
+	const lines = [],
+		words = text
+			.replace(/\n\n/g, ' ` ')
+			.replace(/(\n\s|\s\n)/g, '\r')
+			.replace(/\s\s/g, ' ')
+			.replace('`', ' ')
+			.replace(/(\r|\n)/g, ' ' + ' ')
+			.split(' '),
+		space = ctx.measureText(' ').width,
+		len = words.length
+
+	console.log(words)
+
+	let width = 0,
+		line = '',
+		word = '',
+		w = 0,
+		i
+
+	for (i = 0; i < len; i++) {
+		word = words[i]
+		w = word ? ctx.measureText(word).width : 0
+		if (w) {
+			width = width + space + w
+		}
+		if (w > maxWidth) {
+			return []
+		} else if (w && width < maxWidth) {
+			line += (i ? ' ' : '') + word
+		} else {
+			!i || lines.push(line !== '' ? line.trim() : '')
+			line = word
+			width = w
+		}
+	}
+	if (len !== i || line !== '') {
+		lines.push(line)
+	}
+	return lines
 }
 
 class TextCanvas {
@@ -224,14 +294,17 @@ class TextCanvas {
 
 		canvas.ctx.fillText(text, 0, 0)
 
-		this.textBits.push({ canvas, posX: this.currentX, posY: this.currentY, metrics })
+		this.textBits.push({ canvas, posX: this.currentX, posY: this.currentY, metrics, text })
 
 		this.currentX += width
 		// this.currentY += height
 	}
 
-	render() {
+	render(lineWidth: number) {
 		console.log('rendering', this.textBits)
+
+		const lines = wrapLines(this.ctx, this.textBits.map(bit => bit.text).join(''), lineWidth)
+		console.log('lines', lines)
 
 		const totalWidth = this.textBits.reduce((acc, bit) => acc + bit.canvas.width, 0)
 		const totalHeight = this.textBits.reduce((acc, bit) => Math.max(acc, bit.canvas.height), 0)

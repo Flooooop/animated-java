@@ -54,7 +54,7 @@ import { writable } from 'svelte/store'
 
 Prism.languages.mcfunction = {}
 
-// import './outliner/textDisplay'
+import './outliner/textDisplay'
 
 // @ts-ignore
 globalThis.AnimatedJava = {

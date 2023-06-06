@@ -26,6 +26,7 @@ events.LOAD.subscribe(() => {
 		static preview_controller: NodePreviewController
 
 		text = 'Text Display'
+		lineWidth = 100
 		type = TextDisplayElement.type
 		icon = TextDisplayElement.icon
 		position: ArrayVector3 = [0, 0, 0]
@@ -101,6 +102,7 @@ events.LOAD.subscribe(() => {
 
 	new Property(TextDisplayElement, 'string', 'name', { default: 'Text Display' })
 	new Property(TextDisplayElement, 'string', 'text', { default: DEFAULT_TEXT })
+	new Property(TextDisplayElement, 'string', 'lineWidth', { default: 100 })
 	new Property(TextDisplayElement, 'vector', 'position')
 	new Property(TextDisplayElement, 'vector', 'rotation')
 	new Property(TextDisplayElement, 'boolean', 'visibility', { default: true })
@@ -109,26 +111,12 @@ events.LOAD.subscribe(() => {
 
 	const PreviewController = new NodePreviewController(TextDisplayElement, {
 		setup(element: TextDisplayElement) {
-			// const measure = new CanvasFrame(1, 1)
-			// measure.ctx.font = FONT
-			// measure.ctx.filter = PIXEL_FILTER
-			// const metrics = measure.ctx.measureText(element.text)
-			// const width = Math.ceil(metrics.width)
-			// const height = Math.ceil(metrics.fontBoundingBoxAscent + metrics.fontBoundingBoxDescent)
-
-			// const canvas = new CanvasFrame(width, height)
-			// canvas.ctx.filter = PIXEL_FILTER
-			// canvas.ctx.font = FONT
-			// canvas.ctx.textBaseline = 'top'
-			// canvas.ctx.fillStyle = '#ffffff'
-			// canvas.ctx.fillText(element.text, 0, 0)
-
 			// const text = new JsonText([
 			// 	{ text: 'Hello World!', color: 'red' },
 			// 	{ text: 'Hello World Again!' },
 			// ])
-			const text = new JsonText([{ text: 'aword aword aword aword aword' }])
-			const canvas = text.renderToCanvas()
+			const text = new JsonText([{ text: 'MMMMMMMMMMMMMMMMM' }])
+			const canvas = text.renderToCanvas(element.lineWidth)
 			const width = canvas.width
 			const height = canvas.height
 
