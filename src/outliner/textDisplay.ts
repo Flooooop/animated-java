@@ -145,6 +145,7 @@ events.LOAD.subscribe(() => {
 			textGeometry.attributes.uv.array = textGeometry.attributes.uv.array.map(
 				(v: number, i: number) => (i < 40 ? 0 : v)
 			)
+			const textMesh = new THREE.Mesh(textGeometry, material)
 
 			// Background
 			const backgroundGeometry = new THREE.BoxGeometry(
@@ -152,6 +153,17 @@ events.LOAD.subscribe(() => {
 				(height + 8) / SIZE_DIVISOR,
 				0
 			)
+			const outline = new THREE.LineSegments(
+				new THREE.EdgesGeometry(backgroundGeometry),
+				new THREE.LineBasicMaterial({ color: Canvas.outlineMaterial.color })
+			)
+			// @ts-ignore
+			outline.no_export = true
+			outline.name = element.uuid + '_outline'
+			outline.visible = element.selected
+			outline.renderOrder = 2
+			outline.frustumCulled = false
+
 			const backgroundMaterial = new THREE.MeshBasicMaterial({
 				color: 0x000000,
 				transparent: true,
@@ -168,17 +180,19 @@ events.LOAD.subscribe(() => {
 			// Align edges of text
 			backgroundMesh.position.x = 1 / SIZE_DIVISOR
 
-			const mesh = new THREE.Mesh(textGeometry, material)
-			Project!.nodes_3d[element.uuid] = mesh
-			mesh.name = element.name
-			mesh.type = element.type
+			Project!.nodes_3d[element.uuid] = backgroundMesh
+			backgroundMesh.name = element.uuid
+			backgroundMesh.type = element.type
 			// @ts-ignore
-			mesh.isElement = true
-			mesh.visible = element.visibility
-			mesh.rotation.order = 'ZYX'
-			mesh.add(backgroundMesh)
+			backgroundMesh.isElement = true
+			backgroundMesh.visible = element.visibility
+			backgroundMesh.rotation.order = 'ZYX'
+			backgroundMesh.add(textMesh)
+			backgroundMesh.add(outline)
+			// @ts-ignore
+			backgroundMesh.outline = outline
 			// Align bottom of mesh with the origin
-			mesh.position.y = height / SIZE_DIVISOR / 2 + 4 / SIZE_DIVISOR
+			backgroundMesh.position.y = height / SIZE_DIVISOR / 2 + 4 / SIZE_DIVISOR
 
 			PreviewController.updateTransform(element)
 			PreviewController.dispatchEvent('setup', { element })

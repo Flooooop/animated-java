@@ -132,7 +132,7 @@
 		{
 			"name": "Text Display",
 			"text": "The quick brown fox jumps over the lazy dog.",
-			"lineWidth": 100,
+			"lineWidth": "100",
 			"position": [0, 0, 0],
 			"rotation": [0, 0, 0],
 			"visibility": true,

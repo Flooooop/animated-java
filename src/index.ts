@@ -54,6 +54,12 @@ import { writable } from 'svelte/store'
 
 Prism.languages.mcfunction = {}
 
+// @ts-ignore
+// Canvas.outlineMaterial = new THREE.LineBasicMaterial({
+// 	color: Canvas.outlineMaterial.color,
+// 	linewidth: 2,
+// })
+
 import './minecraft/temp'
 
 import './outliner/textDisplay'
