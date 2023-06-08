@@ -2,7 +2,7 @@ import { createAction } from '../util/moddingTools'
 import * as events from '../events'
 import { ajModelFormat } from '../modelFormat'
 import { JsonText } from '../minecraft'
-import { CANVAS } from '../minecraft/temp'
+import { createCanvas } from '../minecraft/temp'
 
 const DEFAULT_TEXT = 'The quick brown fox jumps over the lazy dog.'
 const SIZE_DIVISOR = 4.75
@@ -115,86 +115,89 @@ events.LOAD.subscribe(() => {
 			// ])
 			// const text = new JsonText([{ text: 'MMMMMMMMMMMMMMMMM' }])
 			// const canvas = text.renderToCanvas(element.lineWidth)
-			const canvas = CANVAS
-			const width = canvas.width
-			const height = canvas.height
+			void createCanvas().then(canvas => {
+				const width = canvas.width
+				const height = canvas.height
 
-			const texture = new THREE.CanvasTexture(canvas.canvas)
-			// @ts-ignore
-			texture.colorSpace = THREE.sRGBEncoding
-			texture.magFilter = THREE.NearestFilter
-			console.log('texture', texture)
-			texture.image.style.border = '2px solid black'
-			jQuery('#preview')[0].appendChild(texture.image)
+				const texture = new THREE.CanvasTexture(canvas.canvas)
+				// @ts-ignore
+				texture.colorSpace = THREE.sRGBEncoding
+				texture.magFilter = THREE.NearestFilter
+				console.log('texture', texture)
+				texture.image.style.border = '2px solid black'
+				jQuery('#preview')[0].appendChild(texture.image)
 
-			const material = new THREE.MeshBasicMaterial({
-				map: texture,
-				transparent: true,
-				alphaTest: 0.5,
+				const material = new THREE.MeshBasicMaterial({
+					map: texture,
+					transparent: true,
+					alphaTest: 0.5,
+				})
+				const textGeometry = new THREE.BoxGeometry(
+					width / SIZE_DIVISOR,
+					height / SIZE_DIVISOR,
+					0.01
+				)
+				// @ts-ignore
+				// Remove the backface
+				textGeometry.attributes.uv.array = textGeometry.attributes.uv.array.map(
+					(v: number, i: number) => (i < 40 ? 0 : v)
+				)
+				const textMesh = new THREE.Mesh(textGeometry, material)
+
+				// Background
+				const backgroundGeometry = new THREE.BoxGeometry(
+					(width + 4) / SIZE_DIVISOR,
+					(height + 8) / SIZE_DIVISOR,
+					0
+				)
+				// Align bottom of mesh with the origin
+				const offset = height / SIZE_DIVISOR / 2 + 4 / SIZE_DIVISOR
+				backgroundGeometry.translate(0, offset, 0)
+				textGeometry.translate(0, offset, 0)
+				element._offset = offset
+
+				const outline = new THREE.LineSegments(
+					new THREE.EdgesGeometry(backgroundGeometry),
+					new THREE.LineBasicMaterial({ color: Canvas.outlineMaterial.color })
+				)
+				// @ts-ignore
+				outline.no_export = true
+				outline.name = element.uuid + '_outline'
+				outline.visible = element.selected
+				outline.renderOrder = 2
+				outline.frustumCulled = false
+
+				const backgroundMaterial = new THREE.MeshBasicMaterial({
+					color: 0x000000,
+					transparent: true,
+					opacity: 0.255,
+				})
+				// @ts-ignore
+				// Remove the backface
+				backgroundGeometry.index!.array = backgroundGeometry.index!.array.map(
+					(v: number, i: number) => (i < 30 ? 0 : v)
+				)
+				const backgroundMesh = new THREE.Mesh(backgroundGeometry, backgroundMaterial)
+				// Prevent z-fighting
+				backgroundMesh.position.z = 0.01
+				// Align edges of text
+				backgroundMesh.position.x = 1 / SIZE_DIVISOR
+				textMesh.position.y = 2 / SIZE_DIVISOR
+
+				Project!.nodes_3d[element.uuid] = backgroundMesh
+				backgroundMesh.name = element.uuid
+				backgroundMesh.type = element.type
+				// @ts-ignore
+				backgroundMesh.isElement = true
+				backgroundMesh.visible = element.visibility
+				backgroundMesh.rotation.order = 'ZYX'
+				backgroundMesh.add(outline)
+				backgroundMesh.add(textMesh)
+				// @ts-ignore
+				backgroundMesh.outline = outline
+				Canvas.updateAll()
 			})
-			const textGeometry = new THREE.BoxGeometry(
-				width / SIZE_DIVISOR,
-				height / SIZE_DIVISOR,
-				0
-			)
-			// @ts-ignore
-			// Remove the backface
-			textGeometry.attributes.uv.array = textGeometry.attributes.uv.array.map(
-				(v: number, i: number) => (i < 40 ? 0 : v)
-			)
-			const textMesh = new THREE.Mesh(textGeometry, material)
-
-			// Background
-			const backgroundGeometry = new THREE.BoxGeometry(
-				(width + 2) / SIZE_DIVISOR,
-				(height + 8) / SIZE_DIVISOR,
-				0
-			)
-			// Align bottom of mesh with the origin
-			const offset = height / SIZE_DIVISOR / 2 + 4 / SIZE_DIVISOR
-			backgroundGeometry.translate(0, offset, 0)
-			textGeometry.translate(0, offset, 0)
-			element._offset = offset
-
-			const outline = new THREE.LineSegments(
-				new THREE.EdgesGeometry(backgroundGeometry),
-				new THREE.LineBasicMaterial({ color: Canvas.outlineMaterial.color })
-			)
-			// @ts-ignore
-			outline.no_export = true
-			outline.name = element.uuid + '_outline'
-			outline.visible = element.selected
-			outline.renderOrder = 2
-			outline.frustumCulled = false
-
-			const backgroundMaterial = new THREE.MeshBasicMaterial({
-				color: 0x000000,
-				transparent: true,
-				opacity: 0.255,
-			})
-			// @ts-ignore
-			// Remove the backface
-			backgroundGeometry.index!.array = backgroundGeometry.index!.array.map(
-				(v: number, i: number) => (i < 30 ? 0 : v)
-			)
-			const backgroundMesh = new THREE.Mesh(backgroundGeometry, backgroundMaterial)
-			// Prevent z-fighting
-			backgroundMesh.position.z = 0.01
-			// Align edges of text
-			backgroundMesh.position.x = 1 / SIZE_DIVISOR
-
-			Project!.nodes_3d[element.uuid] = backgroundMesh
-			backgroundMesh.name = element.uuid
-			backgroundMesh.type = element.type
-			// @ts-ignore
-			backgroundMesh.isElement = true
-			backgroundMesh.visible = element.visibility
-			backgroundMesh.rotation.order = 'ZYX'
-			backgroundMesh.add(textMesh)
-			backgroundMesh.add(outline)
-			// @ts-ignore
-			backgroundMesh.outline = outline
-
+			Project!.nodes_3d[element.uuid] = new THREE.Mesh() // Temp mesh
 			PreviewController.updateTransform(element)
 			PreviewController.dispatchEvent('setup', { element })
 		},

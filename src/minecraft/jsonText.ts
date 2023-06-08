@@ -1,8 +1,3 @@
-const PIXEL_FILTER =
-	'url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxmaWx0ZXIgaWQ9ImZpbHRlciIgeD0iMCIgeT0iMCIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgY29sb3ItaW50ZXJwb2xhdGlvbi1maWx0ZXJzPSJzUkdCIj48ZmVDb21wb25lbnRUcmFuc2Zlcj48ZmVGdW5jUiB0eXBlPSJpZGVudGl0eSIvPjxmZUZ1bmNHIHR5cGU9ImlkZW50aXR5Ii8+PGZlRnVuY0IgdHlwZT0iaWRlbnRpdHkiLz48ZmVGdW5jQSB0eXBlPSJkaXNjcmV0ZSIgdGFibGVWYWx1ZXM9IjAgMSIvPjwvZmVDb21wb25lbnRUcmFuc2Zlcj48L2ZpbHRlcj48L3N2Zz4=#filter)'
-
-const FONT = '16px MinecraftFull'
-
 export type JsonTextColor =
 	| 'dark_red'
 	| 'red'
@@ -111,139 +106,28 @@ export class JsonText {
 		return this.text
 	}
 
-	renderToCanvas(lineWidth: number): TextCanvas {
-		const textCanvas = new TextCanvas()
-		textCanvas.width = lineWidth
-
-		this._renderToCanvas(this.text, textCanvas)
-
-		textCanvas.render()
-
-		return textCanvas
-	}
-
-	private _renderToCanvas(comp: JsonTextComponent, textCanvas: TextCanvas) {
-		if (comp instanceof Array) {
-			console.log('array', comp)
-			comp.forEach(c => this._renderToCanvas(c, textCanvas))
-		} else if (typeof comp === 'string') {
-			console.log('string', comp)
-		} else {
-			console.log('obj', comp)
-			this._renderObj(comp, textCanvas)
+	toHTML(parent: HTMLElement) {
+		function recurse(comp: JsonTextComponent) {
+			if (Array.isArray(comp)) {
+				comp.forEach(c => recurse(c))
+			} else if (typeof comp === 'string') {
+				const element = document.createElement('span')
+				// element.style.cssText = document.defaultView!.getComputedStyle(parent, '').cssText
+				element.innerText = comp
+				parent.appendChild(element)
+			} else {
+				const element = document.createElement('span')
+				// element.style.cssText = document.defaultView!.getComputedStyle(parent, '').cssText
+				if (comp.text) element.innerText = comp.text
+				if (comp.color) {
+					const color = COLOR_MAP[comp.color] || comp.color
+					element.style.color = color
+				}
+				if (comp.extra) recurse(comp.extra)
+				parent.appendChild(element)
+			}
 		}
-	}
 
-	private _renderObj(obj: JsonTextObject, textCanvas: TextCanvas) {
-		const writeOptions: Record<string, any> = {}
-		// canvas.ctx.font = FONT
-		if (obj.color)
-			writeOptions.fillStyle = obj.color[0] === '#' ? obj.color : COLOR_MAP[obj.color]
-
-		if (obj.bold) writeOptions.font = 'bold ' + FONT
-		if (obj.italic) writeOptions.font = 'italic ' + FONT
-		// if (obj.underlined) canvas.canvas.style.textDecoration = 'underline'
-		// if (obj.strikethrough) canvas.canvas.style.textDecoration = 'line-through'
-		// if (obj.obfuscated) canvas.canvas.style.textDecoration = 'blink'
-
-		if (obj.text) {
-			textCanvas.write(obj.text, writeOptions)
-		} else if (obj.score) {
-			textCanvas.write(
-				obj.score.value === undefined
-					? `(${obj.score.name} ${obj.score.objective})`
-					: obj.score.value.toString(),
-				writeOptions
-			)
-		} else if (obj.nbt) {
-			let text = `${obj.nbt}`
-			if (obj.block) text += ` ${obj.block}`
-			else if (obj.entity) text += ` ${obj.entity}`
-			else if (obj.storage) text += ` ${obj.storage}`
-			textCanvas.write(text, writeOptions)
-		} else if (obj.selector) {
-			textCanvas.write(`(${obj.selector})`, writeOptions)
-		}
-	}
-}
-
-interface TextBit {
-	canvas: CanvasFrame
-	posX: number
-	posY: number
-	metrics: TextMetrics
-	text: string
-}
-
-class TextCanvas {
-	canvasFrame: CanvasFrame
-	canvas: HTMLCanvasElement
-	ctx: CanvasRenderingContext2D
-
-	private textBits: TextBit[] = []
-
-	currentX = 0
-	currentY = 0
-
-	constructor() {
-		this.canvasFrame = new CanvasFrame(1, 1)
-		this.canvas = this.canvasFrame.canvas
-		this.ctx = this.canvasFrame.ctx
-	}
-
-	get width() {
-		return this.canvas.width
-	}
-
-	set width(width: number) {
-		this.canvas.width = width
-	}
-
-	get height() {
-		return this.canvas.height
-	}
-
-	set height(height: number) {
-		this.canvas.height = height
-	}
-
-	write(text: string, writeOptions: Record<string, any> = {}) {
-		const measure = new CanvasFrame(1, 1)
-		measure.ctx.font = FONT
-		measure.ctx.filter = PIXEL_FILTER
-		const metrics = measure.ctx.measureText(text)
-		const width = Math.ceil(metrics.width)
-		const height = Math.ceil(metrics.fontBoundingBoxAscent + metrics.fontBoundingBoxDescent)
-
-		const canvas = new CanvasFrame(width, height)
-		canvas.ctx.font = FONT
-		canvas.ctx.filter = PIXEL_FILTER
-		canvas.ctx.fillStyle = '#ffffff'
-		canvas.ctx.textBaseline = 'top'
-		canvas.ctx.textAlign = 'center'
-
-		Object.assign(canvas.ctx, writeOptions)
-
-		canvas.ctx.fillText(text, 0, 0)
-
-		this.textBits.push({ canvas, posX: this.currentX, posY: this.currentY, metrics, text })
-
-		this.currentX += width
-		// this.currentY += height
-	}
-
-	render() {
-		console.log('rendering', this.textBits)
-
-		const totalWidth = this.textBits.reduce((acc, bit) => acc + bit.canvas.width, 0)
-		const totalHeight = this.textBits.reduce((acc, bit) => Math.max(acc, bit.canvas.height), 0)
-
-		this.width = totalWidth
-		this.height = totalHeight
-
-		for (const bit of this.textBits) {
-			console.log('drawing', bit)
-			this.ctx.drawImage(bit.canvas.canvas, bit.posX, bit.posY)
-		}
+		recurse(this.text)
 	}
 }

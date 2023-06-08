@@ -1,32 +1,119 @@
-import { FONT, PIXEL_FILTER } from '.'
+// @ts-ignore
+import fontFile from '../assets/MinecraftFull.ttf'
+import * as htmlToImage from 'html-to-image'
 
-export const CANVAS = new CanvasFrame(100, 100)
-// CANVAS.ctx.font = FONT
-// CANVAS.ctx.filter = PIXEL_FILTER
-// CANVAS.ctx.fillStyle = '#ffffff'
-// CANVAS.ctx.textBaseline = 'top'
+import { FONT, JsonText, PIXEL_FILTER } from '.'
 
-const DATA = `<svg xmlns="http://www.w3.org/2000/svg" width="100", height="100">
-	<foreignObject width="100%" height="100%">
-		<div xmlns="http://www.w3.org/1999/xhtml" style="font: ${FONT}; filter: ${PIXEL_FILTER}; color: #ffffff; text-align: left; white-space: nowrap;">
-			Hello World!
-		</div>
-	</foreignObject>
-</svg>`
+const CSS = `@font-face {
+	font-family: 'MinecraftFull';
+	src: url(${fontFile as string});
+}`
 
-const DOMURL = window.URL || window.webkitURL || window
+function autoCrop(canvasFrame: CanvasFrame) {
+	// Based on code by remy, licensed under MIT
+	// https://gist.github.com/remy/784508
 
-const IMG = new Image()
-const SVG = new Blob([DATA], { type: 'image/svg+xml;charset=utf-8' })
-const URL = DOMURL.createObjectURL(SVG)
+	const copy = document.createElement('canvas').getContext('2d')!
+	const pixels = canvasFrame.ctx.getImageData(0, 0, canvasFrame.width, canvasFrame.height)
+	let i
+	const bound: Record<string, number | null> = {
+		top: null,
+		left: null,
+		right: null,
+		bottom: null,
+	}
+	let x, y
 
-IMG.onload = function () {
-	CANVAS.ctx.drawImage(IMG, 0, 0)
-	DOMURL.revokeObjectURL(URL)
+	for (i = 0; i < pixels.data.length; i += 4) {
+		if (pixels.data[i + 3] !== 0) {
+			x = (i / 4) % canvasFrame.width
+			y = ~~(i / 4 / canvasFrame.width)
+
+			if (bound.top === null) {
+				bound.top = y
+			}
+
+			if (bound.left === null) {
+				bound.left = x
+			} else if (x < bound.left) {
+				bound.left = x
+			}
+
+			if (bound.right === null) {
+				bound.right = x
+			} else if (bound.right < x) {
+				bound.right = x
+			}
+
+			if (bound.bottom === null) {
+				bound.bottom = y
+			} else if (bound.bottom < y) {
+				bound.bottom = y
+			}
+		}
+	}
+
+	const trimHeight = bound.bottom! - bound.top! + 1,
+		trimWidth = bound.right! - bound.left! + 1,
+		trimmed = canvasFrame.ctx.getImageData(bound.left!, bound.top!, trimWidth, trimHeight)
+
+	copy.canvas.width = trimWidth
+	copy.canvas.height = trimHeight
+	copy.putImageData(trimmed, 0, 0)
+	canvasFrame.canvas = copy.canvas
+	canvasFrame.ctx = copy
 }
 
-IMG.src = URL
-CANVAS.canvas.id = 'test-canvas'
-jQuery('.preview').append(IMG)
-console.log(CANVAS.canvas)
-console.log(IMG)
+export function createCanvas() {
+	const maxWidth = 100 * 2
+	const canvasFrame = new CanvasFrame(maxWidth, 200)
+	// canvasFrame.ctx.font = FONT
+	// canvasFrame.ctx.filter = `url(${PIXEL_FILTER})`
+	// canvasFrame.ctx.fillStyle = '#ffffff'
+	// canvasFrame.ctx.textBaseline = 'top'
+	// canvasFrame.canvas.style.imageRendering = 'pixelated'
+
+	const element = document.createElement('div')
+	const text = new JsonText([{ text: 'Hello World!', color: 'red' }, { text: 'Hello World!' }])
+
+	element.style.width = `${maxWidth}px`
+	element.style.font = FONT
+	element.style.filter = `url(${PIXEL_FILTER})`
+	element.style.color = '#ffffff'
+	element.style.whiteSpace = 'normal'
+	element.style.overflowWrap = 'break-word'
+	element.style.textAlign = 'center'
+	element.style.lineHeight = '22px'
+
+	text.toHTML(element)
+
+	jQuery('#preview')[0].appendChild(element)
+
+	const promise = new Promise<CanvasFrame>(resolve => {
+		void htmlToImage
+			.toPng(element, {
+				fontEmbedCSS: CSS,
+				style: {
+					font: FONT,
+					filter: `url(${PIXEL_FILTER})`,
+					color: '#ffffff',
+					whiteSpace: 'normal',
+					overflowWrap: 'break-word',
+					textAlign: 'center',
+					lineHeight: '22px',
+				},
+			})
+			.then(data => {
+				const img = new Image()
+				img.onload = () => {
+					canvasFrame.loadFromImage(img)
+					autoCrop(canvasFrame)
+					resolve(canvasFrame)
+				}
+				img.src = data
+				// element.remove()
+			})
+	})
+
+	return promise
+}

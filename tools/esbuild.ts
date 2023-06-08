@@ -186,7 +186,7 @@ async function buildDev() {
 		minify: false,
 		platform: 'node',
 		sourcemap: 'inline',
-		loader: { '.svg': 'dataurl', '.ttf': 'binary' },
+		loader: { '.svg': 'dataurl', '.ttf': 'dataurl' },
 		plugins: [
 			workerPlugin.workerPlugin({
 				builder: buildWorker,
@@ -215,7 +215,7 @@ function buildProd() {
 			minify: true,
 			// sourcemap: 'inline',
 			platform: 'node',
-			loader: { '.svg': 'dataurl', '.ttf': 'binary' },
+			loader: { '.svg': 'dataurl', '.ttf': 'dataurl' },
 			plugins: [
 				workerPlugin.workerPlugin({
 					builder: buildWorker,
