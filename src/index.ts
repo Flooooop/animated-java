@@ -54,6 +54,8 @@ import { writable } from 'svelte/store'
 
 Prism.languages.mcfunction = {}
 
+import './minecraft/temp'
+
 import './outliner/textDisplay'
 
 // @ts-ignore

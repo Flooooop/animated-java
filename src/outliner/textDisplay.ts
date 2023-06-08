@@ -2,6 +2,7 @@ import { createAction } from '../util/moddingTools'
 import * as events from '../events'
 import { ajModelFormat } from '../modelFormat'
 import { JsonText } from '../minecraft'
+import { CANVAS } from '../minecraft/temp'
 
 const DEFAULT_TEXT = 'The quick brown fox jumps over the lazy dog.'
 const SIZE_DIVISOR = 4.75
@@ -115,8 +116,9 @@ events.LOAD.subscribe(() => {
 			// 	{ text: 'Hello World!', color: 'red' },
 			// 	{ text: 'Hello World Again!' },
 			// ])
-			const text = new JsonText([{ text: 'MMMMMMMMMMMMMMMMM' }])
-			const canvas = text.renderToCanvas(element.lineWidth)
+			// const text = new JsonText([{ text: 'MMMMMMMMMMMMMMMMM' }])
+			// const canvas = text.renderToCanvas(element.lineWidth)
+			const canvas = CANVAS
 			const width = canvas.width
 			const height = canvas.height
 

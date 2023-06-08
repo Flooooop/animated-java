@@ -1,7 +1,8 @@
 {
 	"meta": {
 		"format": "animated_java/ajmodel",
-		"format_version": "1.4"
+		"format_version": "0.4.0",
+		"uuid": "f169531d-18c7-6aef-fd93-f4388656204a"
 	},
 	"animated_java": {
 		"settings": {
@@ -27,7 +28,11 @@
 				"include_uninstall_function": true,
 				"include_pause_all_animations_function": true,
 				"include_remove_rigs_function": true,
-				"include_remove_all_function": true
+				"include_remove_all_function": true,
+				"include_on_load_function_tags": true,
+				"include_on_tick_function_tags": true,
+				"include_on_summon_function_tags": true,
+				"include_on_remove_function_tags": true
 			},
 			"animated_java:json_exporter": {
 				"output_file": "C:\\Users\\Snave\\AppData\\Roaming\\.gdlauncher\\instances\\Snapshot Map Development\\resourcepacks\\test\\assets\\happy_box_animated_java_rig\\test.json"
@@ -123,6 +128,16 @@
 			},
 			"type": "cube",
 			"uuid": "29c15edc-aea1-917e-1210-69c6c9468111"
+		},
+		{
+			"name": "Text Display",
+			"text": "The quick brown fox jumps over the lazy dog.",
+			"lineWidth": 100,
+			"position": [0, 0, 0],
+			"rotation": [0, 0, 0],
+			"visibility": true,
+			"type": "textDisplay",
+			"uuid": "70e6e037-e009-a7be-289f-751dc1cf690d"
 		}
 	],
 	"outliner": [
@@ -139,7 +154,8 @@
 			"visibility": false,
 			"autouv": 0,
 			"children": ["29c15edc-aea1-917e-1210-69c6c9468111"]
-		}
+		},
+		"70e6e037-e009-a7be-289f-751dc1cf690d"
 	],
 	"textures": [
 		{
