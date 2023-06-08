@@ -130,14 +130,14 @@
 			"uuid": "29c15edc-aea1-917e-1210-69c6c9468111"
 		},
 		{
-			"name": "Text Display",
+			"name": "text_display",
 			"text": "The quick brown fox jumps over the lazy dog.",
 			"lineWidth": "100",
 			"position": [0, 0, 0],
 			"rotation": [0, 0, 0],
 			"visibility": true,
 			"type": "textDisplay",
-			"uuid": "70e6e037-e009-a7be-289f-751dc1cf690d"
+			"uuid": "2c1d65e2-1a62-5811-40f6-f19ffaa9de7c"
 		}
 	],
 	"outliner": [
@@ -155,7 +155,7 @@
 			"autouv": 0,
 			"children": ["29c15edc-aea1-917e-1210-69c6c9468111"]
 		},
-		"70e6e037-e009-a7be-289f-751dc1cf690d"
+		"2c1d65e2-1a62-5811-40f6-f19ffaa9de7c"
 	],
 	"textures": [
 		{

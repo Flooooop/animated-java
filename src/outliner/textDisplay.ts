@@ -10,29 +10,25 @@ const SIZE_DIVISOR = 4.75
 events.LOAD.subscribe(() => {
 	console.log('Animated Java loaded!')
 	class TextDisplayElement extends OutlinerElement {
-		static title = 'Text Display'
-		static type = 'textDisplay'
-		static icon = 'text_fields'
-		static movable = true
-		static resizable = true
-		static rotatable = true
-		static needsUniqueName = true
-		static menu = new Menu([...Outliner.control_menu_group, '_', 'rename', 'delete'])
-		static buttons = [
-			Outliner.buttons.export,
-			Outliner.buttons.locked,
-			Outliner.buttons.visibility,
-		]
-		// eslint-disable-next-line @typescript-eslint/naming-convention
-		static preview_controller: NodePreviewController
-
-		text = 'Text Display'
+		text = 'text_display'
 		lineWidth = 100
-		type = TextDisplayElement.type
-		icon = TextDisplayElement.icon
 		position: ArrayVector3 = [0, 0, 0]
 		rotation: ArrayVector3 = [0, 0, 0]
+		scale: ArrayVector3 = [1, 1, 1]
 		visibility = true
+
+		title = 'text_display'
+		type = 'textDisplay'
+		icon = 'text_fields'
+		movable = true
+		scalable = true
+		rotatable = true
+		needsUniqueName = true
+		menu = new Menu([...Outliner.control_menu_group, '_', 'rename', 'delete'])
+		buttons = [Outliner.buttons.export, Outliner.buttons.locked, Outliner.buttons.visibility]
+		// eslint-disable-next-line @typescript-eslint/naming-convention
+		preview_controller = PreviewController
+		_offset = 0
 
 		constructor(data: Record<string, any>, uuid: string = guid()) {
 			super(data, uuid)
@@ -48,9 +44,10 @@ events.LOAD.subscribe(() => {
 		}
 
 		getWorldCenter() {
+			Reusable.vec3.set(0, this._offset, 0)
 			// @ts-ignore
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-return
-			return THREE.fastWorldPosition(this.mesh, Reusable.vec2)
+			return THREE.fastWorldPosition(this.mesh, Reusable.vec2).add(Reusable.vec3)
 		}
 
 		extend(object: Record<string, any>) {
@@ -101,7 +98,7 @@ events.LOAD.subscribe(() => {
 		}
 	}
 
-	new Property(TextDisplayElement, 'string', 'name', { default: 'Text Display' })
+	new Property(TextDisplayElement, 'string', 'name', { default: 'text_display' })
 	new Property(TextDisplayElement, 'string', 'text', { default: DEFAULT_TEXT })
 	new Property(TextDisplayElement, 'string', 'lineWidth', { default: 100 })
 	new Property(TextDisplayElement, 'vector', 'position')
@@ -153,6 +150,12 @@ events.LOAD.subscribe(() => {
 				(height + 8) / SIZE_DIVISOR,
 				0
 			)
+			// Align bottom of mesh with the origin
+			const offset = height / SIZE_DIVISOR / 2 + 4 / SIZE_DIVISOR
+			backgroundGeometry.translate(0, offset, 0)
+			textGeometry.translate(0, offset, 0)
+			element._offset = offset
+
 			const outline = new THREE.LineSegments(
 				new THREE.EdgesGeometry(backgroundGeometry),
 				new THREE.LineBasicMaterial({ color: Canvas.outlineMaterial.color })
@@ -191,8 +194,6 @@ events.LOAD.subscribe(() => {
 			backgroundMesh.add(outline)
 			// @ts-ignore
 			backgroundMesh.outline = outline
-			// Align bottom of mesh with the origin
-			backgroundMesh.position.y = height / SIZE_DIVISOR / 2 + 4 / SIZE_DIVISOR
 
 			PreviewController.updateTransform(element)
 			PreviewController.dispatchEvent('setup', { element })
@@ -229,6 +230,9 @@ events.LOAD.subscribe(() => {
 	Interface.Panels.outliner.menu.addAction(ACTION, 3)
 	Toolbars.outliner.add(ACTION, 0)
 	MenuBar.menus.edit.addAction(ACTION, 8)
+
+	// @ts-ignore
+	window.TextDisplayElement = TextDisplayElement
 })
 
 // export async function createText() {
