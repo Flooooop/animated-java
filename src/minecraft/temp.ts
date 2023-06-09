@@ -67,14 +67,26 @@ function autoCrop(canvasFrame: CanvasFrame) {
 export function createCanvas() {
 	const maxWidth = 100 * 2
 	const canvasFrame = new CanvasFrame(maxWidth, 200)
-	// canvasFrame.ctx.font = FONT
-	// canvasFrame.ctx.filter = `url(${PIXEL_FILTER})`
-	// canvasFrame.ctx.fillStyle = '#ffffff'
-	// canvasFrame.ctx.textBaseline = 'top'
-	// canvasFrame.canvas.style.imageRendering = 'pixelated'
+	canvasFrame.ctx.font = FONT
+	canvasFrame.ctx.filter = `url(${PIXEL_FILTER})`
+	canvasFrame.ctx.fillStyle = '#ffffff'
+	canvasFrame.ctx.textBaseline = 'top'
+	canvasFrame.ctx.imageSmoothingEnabled = false
+	canvasFrame.canvas.style.imageRendering = 'pixelated'
+	// window.devicePixelRatio = 1.01
+
+	const meta = document.createElement('meta')
+	meta.name = 'viewport'
+	meta.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0'
+	document.head.appendChild(meta)
 
 	const element = document.createElement('div')
-	const text = new JsonText([{ text: 'Hello World!', color: 'red' }, { text: 'Hello World!' }])
+	const text = new JsonText([
+		{ text: 'Hello World!', color: 'red' },
+		' ',
+		{ text: 'Hello World!' },
+	])
+	// const text = new JsonText([{ text: 'Hello World! Hello World!', color: 'red' }])
 
 	element.style.width = `${maxWidth}px`
 	element.style.font = FONT
@@ -84,6 +96,7 @@ export function createCanvas() {
 	element.style.overflowWrap = 'break-word'
 	element.style.textAlign = 'center'
 	element.style.lineHeight = '22px'
+	element.style.imageRendering = 'pixelated'
 
 	text.toHTML(element)
 
@@ -94,13 +107,13 @@ export function createCanvas() {
 			.toPng(element, {
 				fontEmbedCSS: CSS,
 				style: {
-					font: FONT,
-					filter: `url(${PIXEL_FILTER})`,
-					color: '#ffffff',
-					whiteSpace: 'normal',
-					overflowWrap: 'break-word',
-					textAlign: 'center',
-					lineHeight: '22px',
+					// font: FONT,
+					// filter: `url(${PIXEL_FILTER})`,
+					// color: '#ffffff',
+					// whiteSpace: 'normal',
+					// overflowWrap: 'break-word',
+					// textAlign: 'center',
+					// lineHeight: '22px',
 				},
 			})
 			.then(data => {
@@ -112,6 +125,7 @@ export function createCanvas() {
 				}
 				img.src = data
 				// element.remove()
+				// window.devicePixelRatio = 1
 			})
 	})
 

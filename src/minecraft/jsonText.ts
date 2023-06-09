@@ -120,8 +120,7 @@ export class JsonText {
 				// element.style.cssText = document.defaultView!.getComputedStyle(parent, '').cssText
 				if (comp.text) element.innerText = comp.text
 				if (comp.color) {
-					const color = COLOR_MAP[comp.color] || comp.color
-					element.style.color = color
+					element.style.color = COLOR_MAP[comp.color] || comp.color
 				}
 				if (comp.extra) recurse(comp.extra)
 				parent.appendChild(element)

@@ -123,8 +123,8 @@ events.LOAD.subscribe(() => {
 				// @ts-ignore
 				texture.colorSpace = THREE.sRGBEncoding
 				texture.magFilter = THREE.NearestFilter
-				console.log('texture', texture)
-				texture.image.style.border = '2px solid black'
+				// console.log('texture', texture)
+				// texture.image.style.border = '2px solid black'
 				jQuery('#preview')[0].appendChild(texture.image)
 
 				const material = new THREE.MeshBasicMaterial({
