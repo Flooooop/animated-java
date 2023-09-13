@@ -38,7 +38,7 @@ export function injectCustomKeyframes() {
 	})
 
 	// Add new KeyframeDataPoint properties
-	new Property(KeyframeDataPoint, 'string', 'variant', {
+	new Property(KeyframeDataPoint, 'array', 'variants', {
 		label: translate('animated_java.keyframe.variant'),
 		default: 'default',
 		condition: point => {
@@ -129,7 +129,7 @@ export function injectCustomKeyframes() {
 
 			if (result) {
 				const variant = Project.animated_java_variants.variants.find(
-					v => result && v.uuid === result.data_points[0].variant
+					v => result && v.uuid === result.data_points[0].variants[0]
 				)
 				Project.animated_java_variants.select(variant)
 			}
@@ -196,8 +196,8 @@ function keyframeGetterFactory(channel: string) {
 	}
 }
 
-export const getKeyframeVariant = keyframeGetterFactory('variant')
-export const setKeyframeVariant = keyframeSetterFactory('variant')
+export const getKeyframeVariants = keyframeGetterFactory('variant')
+export const setKeyframeVariants = keyframeSetterFactory('variant')
 export const getKeyframeCommands = keyframeGetterFactory('commands')
 export const setKeyframeCommands = keyframeSetterFactory('commands')
 // export const getKeyframeAnimationState = keyframeGetterFactory('animationState')

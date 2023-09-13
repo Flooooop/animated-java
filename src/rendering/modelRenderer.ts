@@ -328,7 +328,7 @@ function renderGroup(group: Group, rig: IRenderedRig) {
 	}
 
 	for (const node of group.children) {
-		if (!node.export) continue
+		if (node.export === false) continue
 		if (node instanceof Group) {
 			const bone = renderGroup(node, rig)
 			if (bone) structure.children.push(bone)
@@ -481,6 +481,7 @@ export function renderRig(modelExportFolder: string, textureExportFolder: string
 
 	// FIXME - Add a warning if no bones or models are exported
 	for (const node of Outliner.root) {
+		if (node.export === false) continue
 		if (node instanceof Group) {
 			const bone = renderGroup(node, rig)
 			if (bone) rootNode.children.push(bone)

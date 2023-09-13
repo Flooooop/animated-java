@@ -80,7 +80,7 @@ export function getAnimationNodes(
 	const nodes: IAnimationNode[] = []
 
 	for (const [uuid, node] of Object.entries(nodeMap)) {
-		if (!node.node.export) continue
+		if (node.node.export === false) continue
 		const included = animation.affected_bones.find(b => b.value === uuid)
 		// Ignore this bone if it's not affected by this animation
 		if (
