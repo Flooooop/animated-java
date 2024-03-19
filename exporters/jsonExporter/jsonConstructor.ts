@@ -50,6 +50,7 @@ interface ISerializedNode {
 	entity_type?: string
 	custom_model_data?: number
 	resource_location?: string
+	bounding_box?: THREE.Box3
 }
 
 interface ISerializedVariant {
@@ -111,6 +112,7 @@ function serializeNodeMap(
 			case 'bone': {
 				const custom_model_data = node.customModelData
 				const resource_location = node.resourceLocation
+				const bounding_box = node.boundingBox
 
 				serializedNodeMap[uuid] = {
 					type,
@@ -119,6 +121,7 @@ function serializeNodeMap(
 					nbt: node.nbt,
 					custom_model_data,
 					resource_location,
+					bounding_box: bounding_box,
 				}
 
 				break
