@@ -5,6 +5,8 @@ import de from './lang/de.yaml'
 // @ts-ignore
 import zh from './lang/zh_cn.yaml'
 
+import { getItem } from './diamondfireConstructor'
+
 export function loadExporter() {
 	const API = AnimatedJava.API
 
@@ -38,7 +40,11 @@ export function loadExporter() {
 					options: [
 						{
 							name: 'Recode',
-							value: 'recode',
+							value: 'Recode',
+						},
+						{
+							name: 'Codeclient',
+							value: 'Codeclient',
 						},
 					],
 				}),
@@ -53,16 +59,20 @@ export function loadExporter() {
 		async export(exportOptions) {
 			console.log('Export Options:', exportOptions)
 
-			const json = constructJSON(exportOptions)
+			let item = await getItem(exportOptions)
 
-			console.log('Exported JSON:', json)
+			if (exportOptions.exporterSettings.minecraft_mod._value == 0) {
+				console.log('Sending data to Recode')
 
-			await fs.promises.writeFile(
-				exportOptions.exporterSettings.output_file.value,
-				exportOptions.ajSettings.minify_output.value
-					? JSON.stringify(json)
-					: JSON.stringify(json, null, '\t')
-			)
+				const packet = `{"source":"Blockbench","type":"nbt","data":"${item}"}`
+
+				const ws = new WebSocket('ws://localhost:31371')
+				ws.addEventListener('open', _ => {
+					ws.send(packet)
+				})
+			} else if (exportOptions.exporterSettings.minecraft_mod._value == 1) {
+				console.log('Sending data to Codeclient')
+			}
 		},
 	})
 }
