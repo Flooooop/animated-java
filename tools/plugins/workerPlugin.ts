@@ -31,13 +31,18 @@ function indentString(str: string, indent: string) {
 	}
 	return result.trim()
 }
-export const workerPlugin: (options: WorkerPluginOptions) => esbuild.Plugin = ({ builder, typeDefPath }) => ({
+export const workerPlugin: (options: WorkerPluginOptions) => esbuild.Plugin = ({
+	builder,
+	typeDefPath,
+}) => ({
 	name: 'worker',
 	setup(build) {
 		build.onResolve({ filter: /^worker!/ }, args => {
 			const moduleName = args.path
 			const filePath = resolve(args.resolveDir, args.path.slice(7))
-			const typePath = `${filePath.replace(/\\/g, '/').replace(/\.(ts|tsx|js|jsx)$/, '')}.types.ts`
+			const typePath = `${filePath
+				.replace(/\\/g, '/')
+				.replace(/\.(ts|tsx|js|jsx)$/, '')}.types.ts`
 
 			if (!existsSync(typePath)) {
 				TypeDefs.set(
@@ -117,7 +122,8 @@ export const workerPlugin: (options: WorkerPluginOptions) => esbuild.Plugin = ({
 			build.onEnd(() => {
 				writeFileSync(
 					typeDefPath,
-					`//GENERATED FILE\n` + indentString(Array.from(TypeDefs.values()).join('\n'), '\t')
+					`//GENERATED FILE\n` +
+						indentString(Array.from(TypeDefs.values()).join('\n'), '\t')
 				)
 			})
 	},

@@ -6,4 +6,4 @@ animated_java.exporters.json_exporter.description: Exports an Animated Java Rig 
 animated_java.exporters.json_exporter.settings.output_file: Output File
 animated_java.exporters.json_exporter.settings.output_file.description: The file to export to.
 animated_java.exporters.json_exporter.settings.output_file.error.empty: |-
-  The output file cannot be empty.
+    The output file cannot be empty.

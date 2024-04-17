@@ -2,8 +2,13 @@ interface PoolItem<T> {
 	available: boolean
 	target: T | null
 }
-type TupleRest<T extends readonly any[]> = ((...t: T) => any) extends (a: any, ...r: infer R) => any ? R : never
-export class Pool<WorkerType extends Worker, TaskFn extends (item: WorkerType, ...args: any[]) => Promise<any>> {
+type TupleRest<T extends readonly any[]> = ((...t: T) => any) extends (a: any, ...r: infer R) => any
+	? R
+	: never
+export class Pool<
+	WorkerType extends Worker,
+	TaskFn extends (item: WorkerType, ...args: any[]) => Promise<any>
+> {
 	private pool: PoolItem<WorkerType>[]
 	private tasks: Set<Promise<ReturnType<TaskFn>> | null>
 	constructor(size: number, private factory: () => WorkerType, private task: TaskFn) {

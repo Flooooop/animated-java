@@ -1,0 +1,7 @@
+# DF Exporter
+animated_java.exporters.diamondfire_exporter.name: DF Exporter
+animated_java.exporters.diamondfire_exporter.description: Exports an Animated Java Rig as a Diamond Fire template.
+
+# Settings
+animated_java.exporters.diamondfire_exporter.settings.mod: Minecraft Mod
+animated_java.exporters.diamondfire_exporter.settings.mod.description: The mod you use to import the template.

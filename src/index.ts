@@ -141,3 +141,4 @@ BBPlugin.register(PACKAGE.name, {
 
 import('../exporters/datapackExporter')
 import('../exporters/jsonExporter')
+import('../exporters/diamondfireExporter')

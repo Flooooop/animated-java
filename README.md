@@ -17,6 +17,7 @@
 <br/>
 
 # How to Install
+
 Open the Plugins menu in BlockBench (File > Plugins)
 
 ![Plugin Menu](https://raw.githubusercontent.com/Animated-Java/animated-java/experimental/src/assets/plugin_menu.png)
@@ -32,13 +33,17 @@ Then, paste this URL into the box that appears: https://animated-java.dev/api/bu
 Click Confirm, and success! You've just installed Animated Java.
 
 # Getting Started
+
 Check out the [Getting Started](https://animated-java.dev/docs/getting_started) page either online or in-app for detailed information on getting started with Animated Java.
 
 # Contributing to Animated Java
+
 ## Prerequisites
+
 Things you'll need installed before you can setup the development environment
-- [Node.js](https://nodejs.org/en/)
-- [Yarn](https://classic.yarnpkg.com/lang/en/docs/install/#windows-stable)
+
+-   [Node.js](https://nodejs.org/en/)
+-   [Yarn](https://classic.yarnpkg.com/lang/en/docs/install/#windows-stable)
 
 ## Setting up the Development Environment
 
@@ -48,9 +53,11 @@ Things you'll need installed before you can setup the development environment
 4. Open Blockbench, then go to `File > Plugins > Load Plugin From File` and select the `animated_java.js` file from your local repo (`dist/animated-java.js`).
 
 ## Adding Localizations
+
 1. Copy the `en.yaml` file in `src/lang/` and rename it to match the language you're translating to.
 2. Translate! Note that you should be testing your translations as you go in Blockbench.
 3. Once you're done translating and testing, open a pull request with your changes.
 
 # Creating a Custom Exporter
+
 We have a guide on how to create an external exporter for Animated Java [here](https://github.com/Animated-Java/animated-java-exporter-plugin-template).

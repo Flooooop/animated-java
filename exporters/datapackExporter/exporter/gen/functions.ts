@@ -104,7 +104,10 @@ function generateLocatorPassenger(
 				.set(useComponents ? 'count' : 'Count', new deepslate.NbtByte(1))
 				.set(
 					useComponents ? 'components' : 'tag',
-					new deepslate.NbtCompound().set(useComponents ? 'minecraft:custom_model_data' : 'CustomModelData', new deepslate.NbtInt(1))
+					new deepslate.NbtCompound().set(
+						useComponents ? 'minecraft:custom_model_data' : 'CustomModelData',
+						new deepslate.NbtInt(1)
+					)
 				)
 		)
 		.set(
@@ -219,7 +222,10 @@ function generateCameraPassenger(
 				.set(useComponents ? 'count' : 'Count', new deepslate.NbtByte(1))
 				.set(
 					useComponents ? 'components' : 'tag',
-					new deepslate.NbtCompound().set(useComponents ? 'minecraft:custom_model_data' : 'CustomModelData', new deepslate.NbtInt(1))
+					new deepslate.NbtCompound().set(
+						useComponents ? 'minecraft:custom_model_data' : 'CustomModelData',
+						new deepslate.NbtInt(1)
+					)
 				)
 		)
 		.set(
@@ -631,7 +637,9 @@ export function generateFunctions(folders: IFolders) {
 							? node
 							: G.exportData.rig.variantModels[variant.name][uuid]
 
-						const cmdPath = useComponents ? 'item.components.minecraft:custom_model_data' : 'item.tag.CustomModelData'
+						const cmdPath = useComponents
+							? 'item.components.minecraft:custom_model_data'
+							: 'item.tag.CustomModelData'
 
 						return `execute if entity @s[tag=${formatStr(G.TAGS.namedBoneEntity, [
 							node.name,
