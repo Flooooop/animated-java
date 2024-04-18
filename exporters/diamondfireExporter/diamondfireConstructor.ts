@@ -1,3 +1,5 @@
+import { error } from "console"
+
 interface Animation {
 	name: string
 	frames: Frame[]
@@ -71,38 +73,41 @@ export async function getItem(exportOptions) {
 		}
 
 		for (const frame in animation.frames) {
+			
+			// if frame isnt a number
+			if (/[^\d\n]/gm.test(frame)) {
+				continue
+			}
+
 			let nodes = []
 			try {
 				for (const node of Object.values(animation.frames[frame].nodes) as Node[]) {
 					nodes.push(node.uuid)
 					// flip matrix over diagonal and then dot product with [[-1,0,0,0],[0,1,0,0],[0,0,-1,0],[0,0,0,1]] and then round to 3 decimal places
-
 					let matrix = `${-node.matrix.elements[0].toFixed(
 						3
-					)},${-node.matrix.elements[4].toFixed(3)},${-node.matrix.elements[8].toFixed(
+					)},${node.matrix.elements[4].toFixed(3)},${-node.matrix.elements[8].toFixed(
 						3
-					)},${-node.matrix.elements[12].toFixed(3)},${node.matrix.elements[1].toFixed(
+					)},${node.matrix.elements[12].toFixed(3)},${-node.matrix.elements[1].toFixed(
 						3
-					)},${node.matrix.elements[5].toFixed(3)},${node.matrix.elements[9].toFixed(
+					)},${node.matrix.elements[5].toFixed(3)},${-node.matrix.elements[9].toFixed(
 						3
 					)},${node.matrix.elements[13].toFixed(3)},${-node.matrix.elements[2].toFixed(
 						3
-					)},${-node.matrix.elements[6].toFixed(3)},${-node.matrix.elements[10].toFixed(
+					)},${node.matrix.elements[6].toFixed(3)},${-node.matrix.elements[10].toFixed(
 						3
-					)},${-node.matrix.elements[14].toFixed(3)},${node.matrix.elements[3].toFixed(
+					)},${node.matrix.elements[14].toFixed(3)},${-node.matrix.elements[3].toFixed(
 						3
-					)},${node.matrix.elements[7].toFixed(3)},${node.matrix.elements[11].toFixed(
+					)},${node.matrix.elements[7].toFixed(3)},${-node.matrix.elements[11].toFixed(
 						3
 					)},${node.matrix.elements[15].toFixed(3).trim()}\n`
 
 					matrix = matrix
 						.replace(
-							/(((?<=\.)(?=.[0\n,]{2}))|((?<=\.)(?=.[\n,]))|((?<=\.\d)(?=.[0\n,]{1}))|((?<=\.\d\d)))0|(?<!\.)(?=\.[0\n,]{2})\./gm,
+							/(((?<=\.)(?=.[0\n,]{2}))|((?<=\.)(?=.[\n,]))|((?<=\.\d)(?=.[0\n,]{1}))|((?<=\.\d\d)))0|(?<!\.)(?=\.[0\n,]{3})\./gm,
 							''
 						)
 						.slice(0, -1)
-					console.log(matrix)
-
 					animation_data[animation.name][uuids[node.uuid].name].push(matrix)
 				}
 			} catch {
@@ -163,13 +168,14 @@ export async function getItem(exportOptions) {
 
 	//animation data
 	for (const animation in animation_data) {
-		let animation_string = ''
-		let animation_items = ''
-		let len = 10000
-		let index = 0
-
 		for (const uuid in uuids) {
+			let animation_string = ''
+			let animation_items = ''
+			let len = 10000
+			let index = 0
+
 			for (let i = 0; i < animation_data[animation].duration; i++) {
+				
 				let string = animation_data[animation][uuids[uuid].name][i]
 				len -= string.length
 				if (len < 0) {
@@ -186,6 +192,7 @@ export async function getItem(exportOptions) {
 
 				animation_string += ';' + string
 			}
+
 			if (animation_string != '') {
 				if (index > 25) {
 					throw new Error(`Exceeded frame limit at frame ${i + 1}`)
@@ -203,12 +210,10 @@ export async function getItem(exportOptions) {
 	}
 
 	let code = await textToGZip(`{"blocks":[${blocks.join(',')}]}`)
-	console.log(item_name)
 	const templateData = `{"author":"Floophead", "name":"const.rig.${model}", "version":1, "code": "${code}"}`
 	const item = `{Count:1b,id:'minecraft:light_blue_stained_glass',tag:{PublicBukkitValues:{\\"hypercube:codetemplatedata\\":'${templateData.replaceAll(
 		'"',
 		'\\"'
 	)}'},${item_name.replaceAll('"', '\\"')}}}`
-	console.log(item)
 	return item
 }
