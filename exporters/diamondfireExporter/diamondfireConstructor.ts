@@ -95,7 +95,12 @@ export async function getItem(exportOptions) {
 						3
 					)},${node.matrix.elements[15].toFixed(3).trim()}\n`
 
-					matrix = matrix.replace(/(((?<=\.)(?=.[0\n,]{2}))|((?<=\.)(?=.[\n,]))|((?<=\.\d)(?=.[0\n,]{1}))|((?<=\.\d\d)))0|(?<!\.)(?=\.[0\n,]{2})\./mg, '').slice(0, -1)
+					matrix = matrix
+						.replace(
+							/(((?<=\.)(?=.[0\n,]{2}))|((?<=\.)(?=.[\n,]))|((?<=\.\d)(?=.[0\n,]{1}))|((?<=\.\d\d)))0|(?<!\.)(?=\.[0\n,]{2})\./gm,
+							''
+						)
+						.slice(0, -1)
 					console.log(matrix)
 
 					animation_data[animation.name][uuids[node.uuid].name].push(matrix)
@@ -200,7 +205,10 @@ export async function getItem(exportOptions) {
 	let code = await textToGZip(`{"blocks":[${blocks.join(',')}]}`)
 	console.log(item_name)
 	const templateData = `{"author":"Floophead", "name":"const.rig.${model}", "version":1, "code": "${code}"}`
-	const item = `{Count:1b,id:'minecraft:light_blue_stained_glass',tag:{PublicBukkitValues:{\\"hypercube:codetemplatedata\\":'${templateData.replaceAll('"','\\"')}'},${item_name.replaceAll('"','\\"')}}}`
+	const item = `{Count:1b,id:'minecraft:light_blue_stained_glass',tag:{PublicBukkitValues:{\\"hypercube:codetemplatedata\\":'${templateData.replaceAll(
+		'"',
+		'\\"'
+	)}'},${item_name.replaceAll('"', '\\"')}}}`
 	console.log(item)
 	return item
 }
