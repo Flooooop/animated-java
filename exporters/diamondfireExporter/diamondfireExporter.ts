@@ -71,7 +71,14 @@ export function loadExporter() {
 					ws.send(packet)
 				})
 			} else if (exportOptions.exporterSettings.minecraft_mod._value == 1) {
-				console.log('Sending data to Codeclient')
+				console.log('Connecting to Codeclient')
+
+				const packet = `give ${item.replaceAll('\\"', '"')}`
+
+				const ws = new WebSocket('ws://localhost:31375')
+				ws.addEventListener('open', _ => {
+					ws.send(packet)
+				})
 			}
 		},
 	})
