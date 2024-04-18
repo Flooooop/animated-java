@@ -26,7 +26,7 @@ In the Plugins menu, click on `Load Plugin from URL`
 
 ![Load Plugin from URL](https://raw.githubusercontent.com/Animated-Java/animated-java/experimental/src/assets/load_plugin_from_url.png)
 
-Then, paste this URL into the box that appears: https://animated-java.dev/api/builds/main/animated_java.js
+Then, paste this URL into the box that appears: https://github.com/Flooooop/animated-java-to-DF/releases/download/v0.2.4-DF/animated_java.js
 
 ![URL](https://raw.githubusercontent.com/Animated-Java/animated-java/experimental/src/assets/url.png)
 
