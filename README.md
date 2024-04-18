@@ -14,6 +14,7 @@
 <h3 align="center">
 	A Blockbench plugin that makes complex animation a breeze in Minecraft: Java Edition.
 </h3>
+<em>Edited by Floophead to include a DF exporter. Huge credit to the original team for doing the hard part!</em>
 <br/>
 
 # How to Install
